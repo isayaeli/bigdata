@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data Test</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'bootstrap-icons/bootstrap-icons.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="left-item">
+            <li><a href="">BIG DATA TEST</a></li>
+        </div>
+        <div class="right-item">
+            <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-dark rounded-pill" >Upload  File</a></li>
+        </div>
+    </nav>
+    <main>
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success" role="alert">
+                           {{message}}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <input class="mt-4" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search and filter data by country name/country code" title="Type in a anthing">
+            <div class="card mt-4">
+        
+                   <table class="table table-striped "id="myTable">
+                    <thead class="thead-dark"  >
+                       
+                        <th>Country Name</th>
+                        <th>Country Code</th>
+                        <th>Year</th>
+                        <th class="text-center" >Life expectancy at birth, total (years)</th>
+                        <th class="text-center" >Graphical View</th>
+                        
+                    </thead>
+                    {% for data in data %}
+                    {% if forloop.counter != 1 %}
+                    <tr>
+                        
+                        <td>{{ data.country_name }}</td>
+                        <td>{{data.country_code}}</td>
+                        <td>{{data.year|floatformat}}</td>
+                        <td class="text-center" >{{data.age}}</td>
+                        <td class="text-center" ><a href="{% url 'graph' data.country_name %}"><i class="bi bi-bar-chart text-dark " ></i></a></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                   </table>
+                
+            </div>
+        </div>
+    </main>
+
+
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload File</h5>
+   
+        </div>
+        <div class="modal-body">
+          <form id="uploadForm" action="{% url 'upload_file' %}" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input id="myfile" type="file" name="myfile" class="form-control">
+              <div class="modal-footer">
+                    <button id="btn" type="submit" class="btn btn-warning rounded-pill">Submit</button>
+                    <div class="bg-warning rounded-pill">
+                        <img class="m-2" id="gif" style=" display:none; border-radius:50px; height:30px;width:30px;" src="{% static 'balls.gif' %}" alt="">
+                    </div>
+              </div>
+          </form>
+        </div>
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+        <div id="uploadStatus"></div>
+      </div>
+    </div>
+  </div>
+   
+</body>
+<script src="{% static 'js/jquery.min.js' %}" ></script>
+<script src="{% static 'js/popper.js' %}" ></script>
+<script src="{% static 'js/bootstrap.min.js' %}" ></script>
+<script src="{% static 'js/main.js' %}" ></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+<script>
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        td = tr[i].getElementsByTagName("td")[1];
+    
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+    </script>
+
+    <script>
+        $(document).on('click', '#btn',function(){
+        
+            $('#btn').text('Importing Please wait')
+            $("#gif").show()
+        })
+    </script>
+     
+</html>
